@@ -1,0 +1,11 @@
+premierement, les dockerfile doivent être accessible sur un réseau (ex : dockerhub)
+
+créer une image a partir de votre dockerfile :
+
+docker build ./api -t votre_pseudo_dockerhub/api_python_poc:latest
+
+connectez vous sur dockerdesktop ou en ligne de commande docker via "docker login"
+
+créer un repository : api_python_poc sur dockerhub
+
+docker push votre_pseudo_dockerhub/api_python_poc:latest

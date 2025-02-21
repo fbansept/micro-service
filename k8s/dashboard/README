@@ -1,0 +1,22 @@
+
+https://github.com/kubernetes/dashboard
+
+# Add kubernetes-dashboard repository
+helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
+# Deploy a Helm Release named "kubernetes-dashboard" using the kubernetes-dashboard chart
+helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --create-namespace --namespace kubernetes-dashboard
+
+
+kubectl apply -f k8s/dashboard/dashboard-adminuser.yaml
+kubectl apply -f k8s/dashboard/cluster-role-binding.yaml
+
+
+kubectl proxy --port=8001
+
+http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
+
+Créer un token (Attention à enlever les éventuels retour à la ligne)
+
+kubectl -n kubernetes-dashboard create token admin-user
+
+le coller dans le champs jeton de la page de login (Attention à enlever les éventuels retour à la ligne)
