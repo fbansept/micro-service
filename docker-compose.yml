@@ -1,0 +1,71 @@
+services:
+  flask-api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    deploy:
+      replicas: 3
+    volumes:
+      - flask-logs:/var/log/flask
+
+  flask-admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    volumes:
+      - flask-logs:/var/log/flask
+
+  redis:
+    image: redis:7.4
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.1
+    environment:
+      - discovery.type=single-node
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.10.1
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline
+    ports:
+      - "5044:5044"
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.10.1
+    ports:
+      - "5601:5601"
+
+  filebeat:
+    build:
+      context: ./filebeat
+      dockerfile: Dockerfile
+    volumes:
+      - flask-logs:/var/log/flask
+    depends_on:
+      - logstash
+
+  nginx-gateway:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx-gateway.conf:/etc/nginx/templates/default.conf.template
+    depends_on:
+      - flask-api
+      - flask-admin
+      - nginx-static
+
+  nginx-static:
+    image: nginx:latest
+    volumes:
+      - ./static:/usr/share/nginx/html
+      - ./nginx-static.conf:/etc/nginx/templates/default.conf.template
+
+volumes:
+  flask-logs:
