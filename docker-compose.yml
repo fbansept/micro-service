@@ -56,6 +56,7 @@ services:
       - "80:80"
     volumes:
       - ./nginx-gateway.conf:/etc/nginx/templates/default.conf.template
+    restart: always
     depends_on:
       - flask-api
       - flask-admin
@@ -64,7 +65,7 @@ services:
   nginx-static:
     image: nginx:latest
     volumes:
-      - ./static:/usr/share/nginx/html
+      - ./assets:/usr/share/nginx/html
       - ./nginx-static.conf:/etc/nginx/templates/default.conf.template
 
 volumes:
